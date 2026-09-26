@@ -42,17 +42,25 @@ sched_cols = ["game_id", "season", "week", "game_type", "gameday", "home_team", 
 dim_schedule = df_sched[[c for c in sched_cols if c in df_sched.columns]].drop_duplicates(subset=["game_id"])
 
 print("4. Building Fact_WeeklyStats...")
+# Core stats list
 stat_cols = [
-    "game_id",
-    "player_id", "season", "week", "recent_team", "opponent_team",
-    "completions", "attempts", "passing_yards", "passing_tds", "interceptions",
+    "game_id", "player_id", "season", "week", "recent_team", "opponent_team",
+    "completions", "attempts", "passing_yards", "passing_tds",
     "carries", "rushing_yards", "rushing_tds",
     "receptions", "targets", "receiving_yards", "receiving_tds"
 ]
 existing_cols = [c for c in stat_cols if c in df_stats.columns]
 fact_weekly = df_stats[existing_cols].fillna(0).copy()
 
-# Guaranteed fumbles_lost column: calculate if breakdown columns exist, otherwise default to 0
+# --- GUARANTEED INTERCEPTIONS COLUMN ---
+if "interceptions" in df_stats.columns:
+    fact_weekly["interceptions"] = df_stats["interceptions"].fillna(0)
+elif "passing_interceptions" in df_stats.columns:
+    fact_weekly["interceptions"] = df_stats["passing_interceptions"].fillna(0)
+else:
+    fact_weekly["interceptions"] = 0
+
+# --- GUARANTEED FUMBLES LOST COLUMN ---
 fumble_candidates = ["sack_fumbles_lost", "rushing_fumbles_lost", "receiving_fumbles_lost", "fumbles_lost"]
 found_fumbles = [c for c in fumble_candidates if c in df_stats.columns]
 
@@ -72,15 +80,13 @@ if "game_id" not in fact_weekly.columns:
     )
     fact_weekly = fact_weekly.merge(sched_lookup, on=["season", "week", "recent_team"], how="left")
 
-print("5. Building Fact_Projections (Baseline Rolling Averages)...")
+print("5. Building Fact_Projections...")
 numeric_metrics = [
     "passing_yards", "passing_tds", "interceptions", 
     "rushing_yards", "rushing_tds", "receptions", 
     "receiving_yards", "receiving_tds", "fumbles_lost"
 ]
-existing_metrics = [c for c in numeric_metrics if c in fact_weekly.columns]
-
-fact_proj = fact_weekly.groupby("player_id")[existing_metrics].mean().reset_index()
+fact_proj = fact_weekly.groupby("player_id")[numeric_metrics].mean().reset_index()
 fact_proj["projected_season"] = SEASON
 
 print("6. Exporting CSV files to /data...")
