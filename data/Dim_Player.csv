@@ -129,7 +129,7 @@ player_id,player_name,position,team,status,headshot_url
 00-0035358,Chase McLaughlin,K,TB,ACT,"https://static.www.nfl.com/image/upload/f_auto,q_auto/league/enkzsuyzk232mbq5oe4w"
 00-0035359,David Sills,WR,TB,RES,"https://static.www.nfl.com/image/upload/f_auto,q_auto/league/g0jd9yaq2yhw05ktamlh"
 00-0035406,Lil'Jordan Humphrey,WR,DEN,ACT,"https://static.www.nfl.com/image/upload/f_auto,q_auto/league/otxrvkflhixz9akhmfqq"
-00-0035500,Greg Dortch,WR,BUF,DEV,"https://static.www.nfl.com/image/upload/f_auto,q_auto/league/pylafoddjiqh4rhjlhpf"
+00-0035500,Greg Dortch,WR,BUF,ACT,"https://static.www.nfl.com/image/upload/f_auto,q_auto/league/pylafoddjiqh4rhjlhpf"
 00-0035535,Darius Slayton,WR,IND,ACT,"https://static.www.nfl.com/image/upload/f_auto,q_auto/league/otksyfjll5waf0vsczeu"
 00-0035537,Ty Johnson,RB,BUF,ACT,"https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zruhihypizhtgpvsaj3c"
 00-0035544,Tom Kennedy,WR,DET,ACT,"https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cbpuzvde5zqalmkjo0dv"
@@ -416,7 +416,7 @@ player_id,player_name,position,team,status,headshot_url
 00-0038794,Jaleel McLaughlin,RB,CLE,ACT,"https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jlzkji7mfkcmkyz2tygj"
 00-0038797,Emanuel Wilson,RB,SEA,ACT,"https://static.www.nfl.com/image/upload/f_auto,q_auto/league/uorruvczsxzvffpbxu8z"
 00-0038809,Ben Sims,TE,MIA,CUT,"https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rigksrncrdjmbhvfuclp"
-00-0038824,Ryan Miller,WR,MIA,ACT,"https://static.www.nfl.com/image/upload/f_auto,q_auto/league/cyn2sjaozsadlvgarg6p"
+00-0038824,Ryan Miller,WR,MIA,ACT,"https://static.www.nfl.com/image/upload/f_auto,q_auto/league/g7bpkzvg0xyww8weku0r"
 00-0038839,Mitchell Tinsley,WR,HOU,DEV,"https://static.www.nfl.com/image/upload/f_auto,q_auto/league/t4h8qtzndtvf6is6naew"
 00-0038840,Brycen Tremayne,WR,CAR,ACT,"https://static.www.nfl.com/image/upload/f_auto,q_auto/league/isc094ihkf69vzrlkiql"
 00-0038883,Isaiah Winstead,WR,PIT,CUT,
