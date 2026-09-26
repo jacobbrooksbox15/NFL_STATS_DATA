@@ -5,9 +5,13 @@ import nflreadpy as nfl
 DATA_DIR = "data"
 os.makedirs(DATA_DIR, exist_ok=True)
 
-SEASON = 2026
+# Dynamically pull the latest available NFL season
+try:
+    SEASON = nfl.get_current_season()
+except Exception:
+    SEASON = 2024
 
-print("1. Fetching NFLverse datasets...")
+print(f"1. Fetching NFLverse datasets for season {SEASON}...")
 raw_stats = nfl.load_player_stats(seasons=[SEASON])
 raw_rosters = nfl.load_rosters(seasons=[SEASON])
 raw_sched = nfl.load_schedules(seasons=[SEASON])
@@ -43,11 +47,19 @@ stat_cols = [
     "player_id", "season", "week", "recent_team", "opponent_team",
     "completions", "attempts", "passing_yards", "passing_tds", "interceptions",
     "carries", "rushing_yards", "rushing_tds",
-    "receptions", "targets", "receiving_yards", "receiving_tds",
-    "sack_fumbles_lost", "rushing_fumbles_lost", "receiving_fumbles_lost"
+    "receptions", "targets", "receiving_yards", "receiving_tds"
 ]
 existing_cols = [c for c in stat_cols if c in df_stats.columns]
-fact_weekly = df_stats[existing_cols].fillna(0)
+fact_weekly = df_stats[existing_cols].fillna(0).copy()
+
+# Guaranteed fumbles_lost column: calculate if breakdown columns exist, otherwise default to 0
+fumble_candidates = ["sack_fumbles_lost", "rushing_fumbles_lost", "receiving_fumbles_lost", "fumbles_lost"]
+found_fumbles = [c for c in fumble_candidates if c in df_stats.columns]
+
+if found_fumbles:
+    fact_weekly["fumbles_lost"] = df_stats[found_fumbles].fillna(0).sum(axis=1)
+else:
+    fact_weekly["fumbles_lost"] = 0
 
 # Fallback: if game_id is missing from load_player_stats, match it from dim_schedule
 if "game_id" not in fact_weekly.columns:
@@ -59,10 +71,6 @@ if "game_id" not in fact_weekly.columns:
         .drop_duplicates(subset=["season", "week", "recent_team"])
     )
     fact_weekly = fact_weekly.merge(sched_lookup, on=["season", "week", "recent_team"], how="left")
-
-# Sum total fumbles lost
-fumble_cols = [c for c in ["sack_fumbles_lost", "rushing_fumbles_lost", "receiving_fumbles_lost"] if c in fact_weekly.columns]
-fact_weekly["fumbles_lost"] = fact_weekly[fumble_cols].sum(axis=1)
 
 print("5. Building Fact_Projections (Baseline Rolling Averages)...")
 numeric_metrics = [
