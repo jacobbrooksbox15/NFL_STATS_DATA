@@ -39,6 +39,7 @@ dim_schedule = df_sched[[c for c in sched_cols if c in df_sched.columns]].drop_d
 
 print("4. Building Fact_WeeklyStats...")
 stat_cols = [
+    "game_id",
     "player_id", "season", "week", "recent_team", "opponent_team",
     "completions", "attempts", "passing_yards", "passing_tds", "interceptions",
     "carries", "rushing_yards", "rushing_tds",
@@ -47,6 +48,17 @@ stat_cols = [
 ]
 existing_cols = [c for c in stat_cols if c in df_stats.columns]
 fact_weekly = df_stats[existing_cols].fillna(0)
+
+# Fallback: if game_id is missing from load_player_stats, match it from dim_schedule
+if "game_id" not in fact_weekly.columns:
+    sched_lookup = (
+        pd.concat([
+            df_sched[["game_id", "season", "week", "home_team"]].rename(columns={"home_team": "recent_team"}),
+            df_sched[["game_id", "season", "week", "away_team"]].rename(columns={"away_team": "recent_team"})
+        ])
+        .drop_duplicates(subset=["season", "week", "recent_team"])
+    )
+    fact_weekly = fact_weekly.merge(sched_lookup, on=["season", "week", "recent_team"], how="left")
 
 # Sum total fumbles lost
 fumble_cols = [c for c in ["sack_fumbles_lost", "rushing_fumbles_lost", "receiving_fumbles_lost"] if c in fact_weekly.columns]
